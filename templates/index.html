@@ -10,14 +10,13 @@
     <h1>Song recoomender</h1>
     <p>Write in a list of songs you like</p>
     <form>
-        <input type="select" id="input-songs">
-        <button type="button" onclick="myFunc()">Add song</button>
-        <input type="text" name="song" list="songnames">
+        <input type="text" id="input-songs" name="song" list="songnames">
         <datalist id="songnames">
             {% for song in songs %}
             <option value="{{song}}">{{song}}</option>
             {% endfor %}
         </datalist>
+        <button type="button" onclick="myFunc()">Add song</button>
     </form>
     <ul id="list">
     </ul>
