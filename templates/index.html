@@ -10,7 +10,8 @@
     <h1>Song recoomender</h1>
     <p>Write in a list of songs you like</p>
     <form>
-        <input type="text" id="input-songs" name="song" list="songnames">
+        <input type="text" id="input-songs" name="song" list="songnames"
+            placeholder="Start writing name of song or artist" style="width: 250px;">
         <datalist id="songnames">
             {% for song in songs %}
             <option value="{{song}}">{{song}}</option>
@@ -25,11 +26,27 @@
 <script>
     function myFunc() {
         var input = document.getElementById("input-songs").value
-        var list = document.getElementById("list")
-        var li = document.createElement("li")
-        li.appendChild(document.createTextNode(input))
-        list.appendChild(li)
-        document.getElementById("input-songs").value = ""
+        if (input === "") {
+            return
+        }
+
+        var options = document.getElementsByTagName("option")
+        var found = false
+
+        for (i = 0; i < options.length; i++) {
+            if (options[i].value === input) {
+                found = true
+                break
+            }
+        }
+
+        if (found) {
+            var list = document.getElementById("list")
+            var li = document.createElement("li")
+            li.appendChild(document.createTextNode(input))
+            list.appendChild(li)
+            document.getElementById("input-songs").value = ""
+        }
     }
 </script>
 
