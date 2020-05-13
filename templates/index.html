@@ -10,8 +10,14 @@
     <h1>Song recoomender</h1>
     <p>Write in a list of songs you like</p>
     <form>
-        <input type="text" id="input-songs">
+        <input type="select" id="input-songs">
         <button type="button" onclick="myFunc()">Add song</button>
+        <input type="text" name="song" list="songnames">
+        <datalist id="songnames">
+            {% for song in songs %}
+            <option value="{{song}}">{{song}}</option>
+            {% endfor %}
+        </datalist>
     </form>
     <ul id="list">
     </ul>
@@ -19,9 +25,7 @@
 
 <script>
     function myFunc() {
-
         var input = document.getElementById("input-songs").value
-
         var list = document.getElementById("list")
         var li = document.createElement("li")
         li.appendChild(document.createTextNode(input))
