@@ -9,6 +9,13 @@ data = data_handler.clean_data(df)
 songlist = data_handler.song_artist_to_string(data)
 
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/", methods=["GET"])
 def show_frontpage():
     return render_template("index.html", songs=songlist)
+
+
+@app.route("/", methods=["POST"])
+def process():
+    p = request.form["list_s"]
+    print(p)
+    return p

@@ -9,7 +9,7 @@
 
     <h1>Song recoomender</h1>
     <p>Write in a list of songs you like</p>
-    <form>
+    <form action="http://localhost:5000/" method="POST">
         <input type="text" id="input-songs" name="song" list="songnames"
             placeholder="Start writing name of song or artist" style="width: 250px;">
         <datalist id="songnames">
@@ -18,8 +18,10 @@
             {% endfor %}
         </datalist>
         <button type="button" onclick="myFunc()">Add song</button>
+        <input type="submit">
+        <input type="hidden" id="likedsongs" value="">
     </form>
-    <ul id="list">
+    <ul id="list" name="list_s">
     </ul>
 </body>
 
@@ -47,6 +49,10 @@
             list.appendChild(li)
             document.getElementById("input-songs").value = ""
         }
+    }
+
+    function myOtherFunc() {
+
     }
 </script>
 
