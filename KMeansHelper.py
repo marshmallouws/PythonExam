@@ -19,3 +19,6 @@ class KMeansHelper:
 
     def getLabels(self):
         return self.kmeansObj.labels_
+
+    def getModel(self):
+        return self.kmeansObj
