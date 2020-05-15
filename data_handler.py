@@ -28,3 +28,19 @@ def song_artist_to_string(data: pd.DataFrame, sort_artist=True):
         songlist.append(row["song_name"] + " - " + row["artist_name"])
 
     return songlist
+
+
+def data_to_classes():
+    """
+    Returns:
+    """
+    song_data = pd.read_csv("data/song_data.csv")
+    song_info = pd.read_csv("data/song_info.csv")
+
+    df = pd.concat([song_data, song_info], axis=1, join="inner")
+
+    for idx, row in df.iterrows():
+        pass
+
+
+data_to_classes()
