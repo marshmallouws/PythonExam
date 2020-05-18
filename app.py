@@ -1,4 +1,13 @@
-from flask import Flask, render_template, Markup, request, jsonify, abort
+from flask import (
+    Flask,
+    render_template,
+    Markup,
+    request,
+    jsonify,
+    abort,
+    redirect,
+    url_for,
+)
 import pandas as pd
 import data_handler
 
@@ -23,10 +32,16 @@ def show_frontpage():
     return render_template("index.html", songs=songlist)
 
 
-@app.route("/", methods=["POST"])
-def make_song_list():
-    if not request.json:
-        abort(400)
+@app.route("/result", methods=["POST"])
+def post_result():
     songs = [int(i) for i in request.json]
-    print(songs)
-    return jsonify(songs), 201
+    return redirect(url_for("show_result", songs=songs))
+
+    # else:
+    #    return redirect(url_for("show_frontpage"))
+
+
+@app.route("/result", methods=["GET"])
+def show_result():
+    print("Nan" * 30, "batman")
+    return render_template("result.html")
