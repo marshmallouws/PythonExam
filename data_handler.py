@@ -9,13 +9,7 @@ def clean_data(data: pd.DataFrame):
     Returns:
     pandas.dataframe: Dataframe without duplicates
     """
-    for idx, row in data.iterrows():
-        if idx < 100:
-            print("INDEX", idx)
     df = data.drop_duplicates(subset=["song_name", "artist_name"], inplace=False)
-
-    for idx, row in df.iterrows():
-        print(idx)
     return df
 
 
@@ -54,4 +48,5 @@ def data_to_json():
     df = clean_data(song_info)
 
     for idx, row in df.iterrows():
-        print(idx)
+        pass
+        # print(idx)

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Markup, request, jsonify
+from flask import Flask, render_template, Markup, request, jsonify, abort
 import pandas as pd
 import data_handler
 
@@ -26,7 +26,7 @@ def show_frontpage():
 @app.route("/", methods=["POST"])
 def make_song_list():
     if not request.json:
-        request.abort(400)
-    song = {"id": request.json.get("id", ""), "title": request.json.get("title", "")}
-    songs.append(song)
-    return jsonify({"song": song}), 201
+        abort(400)
+    songs = {"songs": request.json["songs"]}
+    print(songs)
+    return jsonify(songs), 201
