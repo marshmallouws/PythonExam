@@ -14,7 +14,7 @@
             placeholder="Start writing name of song or artist" style="width: 250px;">
         <datalist id="songnames">
             {% for song in songs %}
-            <option value="{{song}}">{{song}}</option>
+            <option value="{{song.id}}">{{song.title}} - {{song.artist}}</option>
             {% endfor %}
         </datalist>
         <button type="button" onclick="myFunc()">Add song</button>
