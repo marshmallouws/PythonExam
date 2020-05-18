@@ -22,6 +22,9 @@ class KMeansHelper:
     def load_model(self):
         self.kmeansObj = pickle.load(open(self.MODEL_PATH, "rb"))
 
+    def save_model(self):
+        pickle.dump(self.kmeansObj, open(self.MODEL_PATH, 'wb'))
+
     def getClusters(self):
         return self.kmeansObj.cluster_centers_
 
