@@ -7,7 +7,7 @@
   <body>
     <h1>Song recoomender</h1>
     <p>Write in a list of songs you like</p>
-    <form action="http://localhost:5000/" method="POST">
+    <form id="inputform" action="http://localhost:5000/" method="POST">
       <input
         type="text"
         id="input-songs"
@@ -25,7 +25,9 @@
         {% endfor %}
       </datalist>
       <button type="button" onclick="myFunc()">Add song</button>
-      <input type="submit" />
+      <button type="button" onclick="submitHandler()">
+        Get recommendation
+      </button>
       <input type="hidden" id="likedsongs" value="" />
     </form>
     <ul id="list" name="list_s"></ul>
@@ -55,11 +57,36 @@
         var li = document.createElement("li");
         li.appendChild(document.createTextNode(input));
         li.setAttribute("data-id", songId);
+        li.classList.add("song-selection");
         list.appendChild(li);
         document.getElementById("input-songs").value = "";
       }
     }
 
     function myOtherFunc() {}
+
+    async function submitHandler() {
+      const arr = [].map.call(
+        document.getElementsByClassName("song-selection"),
+        function (o) {
+          return o.getAttribute("data-id");
+        }
+      );
+
+      const url = document.getElementById("inputform").getAttribute("action");
+      let result = await postData(url, arr);
+      console.log(result);
+    }
+
+    async function postData(url = "", data = {}) {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      return response.json();
+    }
   </script>
 </html>

@@ -27,6 +27,6 @@ def show_frontpage():
 def make_song_list():
     if not request.json:
         abort(400)
-    songs = {"songs": request.json["songs"]}
+    songs = [int(i) for i in request.json]
     print(songs)
     return jsonify(songs), 201
