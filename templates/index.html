@@ -1,39 +1,195 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Song recommender</title>
+    <!-- CSS only -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://kit.fontawesome.com/17b07156aa.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      .content-wrapper {
+        margin: auto;
+        max-width: 1180px;
+        padding: 20px;
+      }
+      header {
+        text-align: center;
+        padding-top: 40px;
+        padding-bottom: 40px;
+        color: white;
+        background: var(--cyan);
+      }
+      header h1 {
+        font-family: "Pacifico", cursive;
+      }
+      .page {
+        padding-top: 50px;
+        background: #f1f1f1;
+        padding-bottom: 50px;
+      }
+      .recommended {
+        background: var(--teal);
+        color: #f1f1f1;
+      }
+      body {
+        background: var(--teal);
+      }
+      #list {
+        margin-top: 10px;
+        list-style: none;
+      }
+      .liked-title {
+        font-size: 20px;
+        margin-top: 10px;
+      }
+      .regular-title {
+        font-size: 25px;
+      }
+      .teal {
+        color: var(--teal);
+      }
+      .getrec-btn {
+        text-transform: uppercase;
+        font-weight: 700;
+      }
+
+      .lds-ring {
+        display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
+      }
+      .lds-ring div {
+        box-sizing: border-box;
+        display: block;
+        position: absolute;
+        width: 64px;
+        height: 64px;
+        margin: 8px;
+        border: 8px solid #fff;
+        border-radius: 50%;
+        animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        border-color: #fff transparent transparent transparent;
+      }
+      .lds-ring div:nth-child(1) {
+        animation-delay: -0.45s;
+      }
+      .lds-ring div:nth-child(2) {
+        animation-delay: -0.3s;
+      }
+      .lds-ring div:nth-child(3) {
+        animation-delay: -0.15s;
+      }
+      @keyframes lds-ring {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+    <title>SongRecoomender</title>
   </head>
 
   <body>
-    <h1>Song recoomender</h1>
-    <p>Write in a list of songs you like</p>
-    <form id="inputform" action="http://localhost:5000/" method="POST">
-      <input
-        type="text"
-        id="input-songs"
-        name="song"
-        list="songnames"
-        placeholder="Start writing name of song or artist"
-        style="width: 250px;"
-      />
-      <datalist id="songnames">
-        {% for song in songs %}
-        <option
-          data-value="{{song.id}}"
-          value="{{song.title}} - {{song.artist}}"
-        ></option>
-        {% endfor %}
-      </datalist>
-      <button type="button" onclick="myFunc()">Add song</button>
-      <button type="button" onclick="submitHandler()">
-        Get recommendation
-      </button>
-      <input type="hidden" id="likedsongs" value="" />
-    </form>
-    <ul id="list" name="list_s"></ul>
+    <header>
+      <div class="content-wrapper">
+        <h1><i class="fa fas fa-music"></i> SongRecoomender</h1>
+      </div>
+    </header>
+    <div class="page">
+      <div class="content-wrapper">
+        <div class="form-wrapper">
+          <h2 class="regular-title teal">
+            Get recommendations tailored for you!
+          </h2>
+          <small>
+            Let us know what songs you like and we'll try our best to make you a
+            recommendation.
+          </small>
+          <form id="inputform" action="http://localhost:5000/" method="POST">
+            <input
+              class="form-control d-inline-block"
+              type="text"
+              id="input-songs"
+              name="song"
+              list="songnames"
+              placeholder="Start writing name of song or artist"
+              style="width: 100%; max-width: 500px; padding-top: 1px;"
+            />
+            <datalist id="songnames">
+              {% for song in songs %}
+              <option
+                data-value="{{song.id}}"
+                value="{{song.title}} - {{song.artist}}"
+              ></option>
+              {% endfor %}
+            </datalist>
+            <button type="button" class="btn btn-secondary" onclick="myFunc()">
+              Add song
+            </button>
+            <button
+              type="button"
+              class="btn btn-info getrec-btn"
+              onclick="submitHandler()"
+            >
+              Get recommendation
+            </button>
+            <input type="hidden" id="likedsongs" value="" />
+          </form>
+        </div>
+        <div class="liked-wrapper">
+          <h3 class="liked-title text-info" style="display: none;">
+            Songs you like
+          </h3>
+          <ul id="list" name="list_s"></ul>
+          <button
+            id="clear-btn"
+            type="button"
+            class="btn btn-warning btn-sm"
+            style="display: none;"
+          >
+            <i class="fa fas fa-times mr-2"></i>Clear selection
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="recommended">
+      <div class="content-wrapper">
+        <h2 class="regular-title">Our recommendations for you</h2>
+        <small class="ph-text"
+          >This is where we'll show you our recommendations.</small
+        >
+        <div class="lds-ring" style="display: none;">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+        <div class="recommended-list"></div>
+      </div>
+    </div>
   </body>
 
   <script>
+    let songAmount = 0;
     function myFunc() {
       var input = document.getElementById("input-songs").value;
       if (input === "") {
@@ -55,17 +211,33 @@
       if (found) {
         var list = document.getElementById("list");
         var li = document.createElement("li");
+        let icon = document.createElement("i");
+        icon.classList.add("text-success", "fa", "fas", "fa-check", "mr-2");
+        li.appendChild(icon);
         li.appendChild(document.createTextNode(input));
         li.setAttribute("data-id", songId);
         li.classList.add("song-selection");
         list.appendChild(li);
         document.getElementById("input-songs").value = "";
+        songAmount++;
+        $("#clear-btn").show();
+        $(".liked-title").show();
       }
     }
 
-    function myOtherFunc() {}
+    $("#clear-btn").click(() => {
+      songAmount = 0;
+      $("#list").html("");
+      $("#clear-btn").hide();
+      $(".liked-title").hide();
+    });
 
     async function submitHandler() {
+      if (songAmount <= 0) return;
+
+      $(".ph-text").hide();
+      $(".lds-ring").show();
+      $("button").prop("disabled", true);
       const arr = [].map.call(
         document.getElementsByClassName("song-selection"),
         function (o) {
@@ -76,6 +248,13 @@
       const url = document.getElementById("inputform").getAttribute("action");
       let result = await postData(url, arr);
       console.log(result);
+      // if good result ->
+      // hide loader, re-enable buttons and display result and scroll to result:
+      /* $('html, body').animate({
+        scrollTop: $(".recommended").offset().top
+          }, 2000);*/
+      // if bad result ->
+      // hide loader, re-enable buttons and show ph-text
     }
 
     async function postData(url = "", data = {}) {
@@ -88,5 +267,10 @@
       });
       return response.json();
     }
+
+    $("#inputform").submit((e) => {
+      e.preventDefault();
+      myFunc();
+    });
   </script>
 </html>
