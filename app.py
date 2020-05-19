@@ -6,8 +6,7 @@ from song_recommender import recommend_songs
 
 app = Flask(__name__)
 
-df = pd.read_csv("data/song_info.csv")
-data = data_handler.clean_data(df)
+data = data_handler.clean_data()
 
 songlist = data_handler.song_artist_to_string(data)
 print(type(data))
@@ -16,7 +15,6 @@ songlist = []
 for idx, row in data.iterrows():
     title = row.loc["song_name"]
     artist = row.loc["artist_name"]
-    idx
     songlist.append({"id": idx, "title": title, "artist": artist})
 
 
@@ -31,5 +29,7 @@ def make_song_list():
         abort(400)
     songs = [int(i) for i in request.json]
     recommended = recommend_songs(songs)
-    return json.dumps(recommended, default=lambda o: o.__dict__,
-                      sort_keys=True, indent=4), 200
+    return (
+        json.dumps(recommended, default=lambda o: o.__dict__, sort_keys=True, indent=4),
+        200,
+    )

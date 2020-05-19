@@ -1,15 +1,15 @@
 # PythonExam Song Suggestions Project
 import pandas as pd
 import matplotlib.pyplot as plt
-import KMeansHelper as kmh
+from kmeans_helper import KMeansHelper
 
-#df = pd.read_csv("data/song_data.csv", sep=",", header=0)
+# df = pd.read_csv("data/song_data.csv", sep=",", header=0)
 
-#print(df.columns)
+# print(df.columns)
 
-#print(df['audio_valence'])
+# print(df['audio_valence'])
 
-helper = kmh.KMeansHelper(pathtofile="data/song_data.csv", clusters=300)
+helper = KMeansHelper(pathtofile="data/song_data.csv", clusters=300)
 
 print(helper.getClusters())
 print(helper.getLabels())

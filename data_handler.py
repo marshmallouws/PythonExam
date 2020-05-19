@@ -1,16 +1,31 @@
 import pandas as pd
+import os.path
 
 
-def clean_data(data: pd.DataFrame):
+def merge_data():
+
+    pass
+
+
+def clean_data():
     """
-    Parameters:
-    data (pandas.dataframe): Dataframe with duplicates
-
     Returns:
     pandas.dataframe: Dataframe without duplicates
     """
-    df = data.drop_duplicates(subset=["song_name", "artist_name"], inplace=False)
-    return df
+    path = "data/combined.csv"
+    if os.path.isfile(path):
+        return pd.read_csv(path)
+
+    data = pd.read_csv("data/song_data.csv")
+    info = pd.read_csv("data/song_info.csv")
+
+    combined_data = data.join(info.drop("song_name", axis=1)).drop_duplicates(
+        subset=["song_name", "artist_name"], keep="first"
+    )
+
+    combined_data.to_csv(path, index=False)
+
+    return combined_data
 
 
 def song_artist_to_string(data: pd.DataFrame, sort_artist=True):
@@ -50,3 +65,8 @@ def data_to_json():
     for idx, row in df.iterrows():
         pass
         # print(idx)
+
+
+panda = pd.read_csv("data/song_data.csv")
+df = clean_data()
+print(df.head())
