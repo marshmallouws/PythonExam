@@ -14,7 +14,8 @@ def recommend_songs(songs):
     # Finding the liked songs using array of indices
     liked_songs = df.iloc[songs]
     average_tempo = liked_songs["tempo"].mean()
-    liked_songs = liked_songs.drop(
+
+    cluster = model.predict([liked_songs.drop(
         [
             "song_name",
             "song_popularity",
@@ -26,26 +27,28 @@ def recommend_songs(songs):
             "time_signature",
         ],
         axis=1,
-    )
-
-    cluster = model.predict([liked_songs.mean()])[0]
+    ).mean()])[0]
 
     cluster_map = pd.DataFrame()
     cluster_map['cluster'] = model.labels_
 
     combined_data = df.join(info.drop("song_name", axis=1)).join(cluster_map).drop_duplicates(
-        subset=['song_name', "artist_name", "song_duration_ms"], keep="last")
+        subset=['song_name', "artist_name"], keep="last")
 
     recommended_cluster = combined_data[combined_data.cluster == cluster]
+    recommended_cluster = recommended_cluster.drop(
+        index=list(liked_songs.index), errors='ignore')
     recommended_songs = recommended_cluster.iloc[(
         recommended_cluster['tempo']-average_tempo).abs().argsort().head(10)]
 
     songs = []
     for idx, song in recommended_songs.iterrows():
-        s = Song(idx, song.loc["song_name"], song.loc["song_popularity"], song.loc["artist_name"], song.loc["album_names"])
+        s = Song(idx, song.loc["song_name"], song.loc["song_popularity"],
+                 song.loc["artist_name"], song.loc["album_names"])
         songs.append(s)
-        
+
     return songs
+
 
 def plot_duration():
     pass
@@ -57,6 +60,3 @@ def plot_tempo():
 
 def plot_audio_valence():
     pass
-
-
-recommend_songs([0, 1, 3, 100, 200, 1000, 930, 1909, 18005, 132, 930])

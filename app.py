@@ -1,6 +1,8 @@
 from flask import Flask, render_template, Markup, request, jsonify, abort
 import pandas as pd
 import data_handler
+import json
+from song_recommender import recommend_songs
 
 app = Flask(__name__)
 
@@ -28,5 +30,6 @@ def make_song_list():
     if not request.json:
         abort(400)
     songs = [int(i) for i in request.json]
-    print(songs)
-    return jsonify(songs), 201
+    recommended = recommend_songs(songs)
+    return json.dumps(recommended, default=lambda o: o.__dict__,
+                      sort_keys=True, indent=4), 200
