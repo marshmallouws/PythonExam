@@ -10,7 +10,9 @@ def recommend_songs(songs):
     df = pd.read_csv("data/song_data.csv")
     info = pd.read_csv("data/song_info.csv")
 
-    liked_songs = df.iloc[songs]  # Finding the liked songs using array of indices
+    # Finding the liked songs using array of indices
+    liked_songs = df.iloc[songs]
+    average_tempo = liked_songs["tempo"].mean()
     liked_songs = liked_songs.drop(
         [
             "song_name",
@@ -25,13 +27,20 @@ def recommend_songs(songs):
         axis=1,
     )
 
-    cluster = model.predict([liked_songs.mean()])
+    cluster = model.predict([liked_songs.mean()])[0]
 
     cluster_map = pd.DataFrame()
     cluster_map['cluster'] = model.labels_
 
-    combined_data = df.join(info.drop("song_name",axis=1)).join(cluster_map).drop_duplicates(subset=['song_name',"artist_name","song_duration_ms"],keep="last")
-    print(combined_data[combined_data.cluster == cluster[0]].describe())
+    combined_data = df.join(info.drop("song_name", axis=1)).join(cluster_map).drop_duplicates(
+        subset=['song_name', "artist_name", "song_duration_ms"], keep="last")
+
+    recommended_cluster = combined_data[combined_data.cluster == cluster]
+    recommended_songs = recommended_cluster.iloc[(
+        recommended_cluster['tempo']-average_tempo).abs().argsort().head(10)]
+
+    print(recommended_songs)
+
 
 def plot_duration():
     pass
