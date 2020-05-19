@@ -1,5 +1,6 @@
 import KMeansHelper as helper
 import pandas as pd
+from songs import Song
 
 
 def recommend_songs(songs):
@@ -39,8 +40,12 @@ def recommend_songs(songs):
     recommended_songs = recommended_cluster.iloc[(
         recommended_cluster['tempo']-average_tempo).abs().argsort().head(10)]
 
-    print(recommended_songs)
-
+    songs = []
+    for idx, song in recommended_songs.iterrows():
+        s = Song(idx, song.loc["song_name"], song.loc["song_popularity"], song.loc["artist_name"], song.loc["album_names"])
+        songs.append(s)
+        
+    return songs
 
 def plot_duration():
     pass
