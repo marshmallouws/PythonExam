@@ -54,7 +54,8 @@
       body {
         background: var(--teal);
       }
-      #list {
+      #list,
+      #list-bad {
         margin-top: 10px;
         list-style: none;
       }
@@ -72,12 +73,14 @@
       .getrec-btn {
         font-weight: 700;
         background: var(--teal);
+        padding: 15px;
       }
       .btn {
         text-transform: uppercase;
       }
       .song-item.popular {
         font-size: 20px;
+        font-weight: 500;
       }
       .song-item.popular span {
         color: var(--warning);
@@ -185,9 +188,12 @@
             <i class="fa fas fa-times mr-2"></i>Clear selection
           </button>
         </div>
+        <div class="hr-spacer mt-5 mb-2">
+          <hr />
+        </div>
         <button
           type="button"
-          class="mt-5 btn btn-success getrec-btn"
+          class="btn btn-success getrec-btn"
           onclick="submitHandler()"
         >
           Get recommendation
