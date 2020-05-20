@@ -3,6 +3,8 @@ import pandas as pd
 from songs import Song
 import matplotlib.pyplot as plt
 import numpy as np
+from io import BytesIO
+import base64
 
 
 def recommend_songs(liked_idxs, disliked_idxs):
@@ -16,11 +18,12 @@ def recommend_songs(liked_idxs, disliked_idxs):
     disliked_songs = data.iloc[disliked_idxs]
 
     if len(disliked_idxs) > 0:
-        largest_difference = calculate_largest_differnce(liked_songs, disliked_songs)
+        largest_difference = calculate_largest_differnce(
+            liked_songs, disliked_songs)
     else:
         largest_difference = "tempo"
 
-    plot = plot(largest_difference, liked_songs, disliked_songs)
+    plot_ = plot(largest_difference, liked_songs, disliked_songs)
 
     avg_attr = liked_songs[largest_difference].mean()
     # average_tempo = liked["tempo"].mean()
@@ -56,7 +59,8 @@ def recommend_songs(liked_idxs, disliked_idxs):
     )
 
     recommended_songs = recommended_cluster.iloc[
-        (recommended_cluster[largest_difference] - avg_attr).abs().argsort().head(10)
+        (recommended_cluster[largest_difference] -
+         avg_attr).abs().argsort().head(10)
     ]
 
     liked_idxs = []
@@ -70,7 +74,7 @@ def recommend_songs(liked_idxs, disliked_idxs):
         )
         liked_idxs.append(s)
 
-    return liked_idxs, plot
+    return [liked_idxs, str(plot_)]
 
 
 def calculate_largest_differnce(liked_songs, disliked_songs):
@@ -171,14 +175,20 @@ def plot(highest_difference, liked_songs, disliked_songs):
     xpos = np.arange(len(plot_liked.keys()))
     plot = plt.figure()
     plt.xticks(xpos, plot_liked.keys())
-    plt.bar(xpos - 0.2, plot_liked.values(), width=0.4, color="r", label="Liked songs")
+    plt.bar(xpos - 0.2, plot_liked.values(),
+            width=0.4, color="r", label="Liked songs")
     plt.bar(
         xpos + 0.2, plot_disliked.values(), width=0.4, color="b", label="Disliked songs"
     )
     plt.xticks(horizontalalignment="left", rotation=-45)
     plt.legend()
 
-    return plot
+    stringio = BytesIO()
+    plot.savefig(stringio, format="png")
+    stringio.seek(0)
+    base64_image = base64.b64encode(stringio.read())
+
+    return base64_image
 
 
 def plot_tempo():
@@ -192,4 +202,4 @@ def plot_audio_valence():
 liked = [1, 2, 3, 4, 5, 6, 7, 300, 2043, 9234, 2934, 234]
 dis = [8, 9, 10, 11, 12, 13, 14, 544, 3452, 231, 45, 1223]
 
-recommend_songs(liked, dis)
+# recommend_songs(liked, dis)
