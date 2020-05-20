@@ -21,6 +21,9 @@ class KMeansHelper:
                 self.fileData.drop(
                     [
                         "song_name",
+                        "artist_name",
+                        "playlist",
+                        "album_names",
                         "song_popularity",
                         "song_duration_ms",
                         "key",

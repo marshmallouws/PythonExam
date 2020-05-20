@@ -34,12 +34,8 @@ def recommend_songs(songs):
         ]
     )[0]
 
-    cluster_map = pd.DataFrame()
-    cluster_map["cluster"] = model.labels_
-
-    combined_data = data.join(cluster_map).drop_duplicates(
-        subset=["song_name", "artist_name"], keep="last"
-    )
+    combined_data = data
+    combined_data["cluster"] = model.labels_
 
     recommended_cluster = combined_data[combined_data.cluster == cluster]
 
