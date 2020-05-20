@@ -14,7 +14,8 @@ def recommend_songs(liked_idxs, disliked_idxs):
     disliked_songs = data.iloc[disliked_idxs]
 
     if len(disliked_idxs) > 0:
-        largest_difference = calculate_largest_differnce(liked_songs, disliked_songs)
+        largest_difference = calculate_largest_differnce(
+            liked_songs, disliked_songs)
     else:
         largest_difference = "tempo"
 
@@ -52,7 +53,8 @@ def recommend_songs(liked_idxs, disliked_idxs):
     )
 
     recommended_songs = recommended_cluster.iloc[
-        (recommended_cluster[largest_difference] - avg_attr).abs().argsort().head(10)
+        (recommended_cluster[largest_difference] -
+         avg_attr).abs().argsort().head(10)
     ]
 
     liked_idxs = []
@@ -74,7 +76,7 @@ def calculate_largest_differnce(liked_songs, disliked_songs):
     Arguments:
     liked_songs: pd.DataFrame - liked songs with all attributes
     disliked_songs: pd.DataFrame - disliked songs with all attributes
-    
+
     Returns:
     column: String - value of attributed with biggest difference between liked and disliked
     liked_mean: mean of the attribute with highest difference.
@@ -87,7 +89,6 @@ def calculate_largest_differnce(liked_songs, disliked_songs):
         "energy",
         "instrumentalness",
         "liveness",
-        "audio_mode",
         "speechiness",
     ]
 
@@ -106,6 +107,7 @@ def calculate_largest_differnce(liked_songs, disliked_songs):
             column = c
 
     if largest_difference > 0.05:
+        print(column)
         return column
     else:
         return "tempo"

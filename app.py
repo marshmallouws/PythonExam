@@ -31,6 +31,7 @@ def make_song_list():
     disliked_songs = [int(i) for i in request.json[1]]
     recommended = recommend_songs(liked_songs, disliked_songs)
     return (
-        json.dumps(recommended, default=lambda o: o.__dict__, sort_keys=True, indent=4),
+        json.dumps(recommended, default=lambda o: o.__dict__,
+                   sort_keys=True, indent=4),
         200,
     )
