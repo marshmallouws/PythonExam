@@ -1,6 +1,8 @@
 from kmeans_helper import KMeansHelper
 import pandas as pd
 from songs import Song
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 def recommend_songs(liked_idxs, disliked_idxs):
@@ -14,10 +16,11 @@ def recommend_songs(liked_idxs, disliked_idxs):
     disliked_songs = data.iloc[disliked_idxs]
 
     if len(disliked_idxs) > 0:
-        largest_difference = calculate_largest_differnce(
-            liked_songs, disliked_songs)
+        largest_difference = calculate_largest_differnce(liked_songs, disliked_songs)
     else:
         largest_difference = "tempo"
+
+    plot = plot(largest_difference, liked_songs, disliked_songs)
 
     avg_attr = liked_songs[largest_difference].mean()
     # average_tempo = liked["tempo"].mean()
@@ -53,8 +56,7 @@ def recommend_songs(liked_idxs, disliked_idxs):
     )
 
     recommended_songs = recommended_cluster.iloc[
-        (recommended_cluster[largest_difference] -
-         avg_attr).abs().argsort().head(10)
+        (recommended_cluster[largest_difference] - avg_attr).abs().argsort().head(10)
     ]
 
     liked_idxs = []
@@ -68,7 +70,7 @@ def recommend_songs(liked_idxs, disliked_idxs):
         )
         liked_idxs.append(s)
 
-    return liked_idxs
+    return liked_idxs, plot
 
 
 def calculate_largest_differnce(liked_songs, disliked_songs):
@@ -106,15 +108,79 @@ def calculate_largest_differnce(liked_songs, disliked_songs):
             largest_difference = abs(l - d)
             column = c
 
-    if largest_difference > 0.05:
+    if largest_difference > 0.1:
         print(column)
         return column
     else:
         return "tempo"
 
 
-def plot_duration():
-    pass
+def plot(highest_difference, liked_songs, disliked_songs):
+    colors = ["r", "b"]
+    all_songs = liked_songs.append(disliked_songs)
+    lowest = min(all_songs[highest_difference])
+    highest = max(all_songs[highest_difference])
+    rnge = np.linspace(lowest, highest, num=6)
+
+    a = f"{rnge[0]} - {rnge[1]}"
+    b = f"{rnge[1]} - {rnge[2]}"
+    c = f"{rnge[2]} - {rnge[3]}"
+    d = f"{rnge[3]} - {rnge[4]}"
+    e = f"{rnge[4]} - {rnge[5]}"
+
+    plot_liked = {
+        a: 0,
+        b: 0,
+        c: 0,
+        d: 0,
+        e: 0,
+    }
+
+    plot_disliked = {
+        a: 0,
+        b: 0,
+        c: 0,
+        d: 0,
+        e: 0,
+    }
+
+    for __, song in liked_songs.iterrows():
+        tmp = song[highest_difference]
+        if tmp < rnge[1]:
+            plot_liked[a] += 1
+        if tmp > rnge[1] and tmp < rnge[2]:
+            plot_liked[b] += 1
+        if tmp > rnge[2] and tmp < rnge[3]:
+            plot_liked[c] += 1
+        if tmp > rnge[3] and tmp < rnge[4]:
+            plot_liked[d] += 1
+        else:
+            plot_liked[e] += 1
+
+    for __, song in disliked_songs.iterrows():
+        tmp = song[highest_difference]
+        if tmp < rnge[1]:
+            plot_disliked[a] += 1
+        if tmp > rnge[1] and tmp < rnge[2]:
+            plot_disliked[b] += 1
+        if tmp > rnge[2] and tmp < rnge[3]:
+            plot_disliked[c] += 1
+        if tmp > rnge[3] and tmp < rnge[4]:
+            plot_disliked[d] += 1
+        else:
+            plot_disliked[e] += 1
+
+    xpos = np.arange(len(plot_liked.keys()))
+    plot = plt.figure()
+    plt.xticks(xpos, plot_liked.keys())
+    plt.bar(xpos - 0.2, plot_liked.values(), width=0.4, color="r", label="Liked songs")
+    plt.bar(
+        xpos + 0.2, plot_disliked.values(), width=0.4, color="b", label="Disliked songs"
+    )
+    plt.xticks(horizontalalignment="left", rotation=-45)
+    plt.legend()
+
+    return plot
 
 
 def plot_tempo():
@@ -125,5 +191,7 @@ def plot_audio_valence():
     pass
 
 
-a = recommend_songs([1, 2, 3, 4, 5, 6, 7, 8, 9], [10, 11, 12, 13, 14, 15])
-print(a)
+liked = [1, 2, 3, 4, 5, 6, 7, 300, 2043, 9234, 2934, 234]
+dis = [8, 9, 10, 11, 12, 13, 14, 544, 3452, 231, 45, 1223]
+
+recommend_songs(liked, dis)
