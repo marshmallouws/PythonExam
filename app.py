@@ -27,9 +27,11 @@ def show_frontpage():
 def make_song_list():
     if not request.json:
         abort(400)
-    songs = [int(i) for i in request.json]
-    recommended = recommend_songs(songs)
+    liked_songs = [int(i) for i in request.json[0]]
+    disliked_songs = [int(i) for i in request.json[1]]
+    recommended = recommend_songs(liked_songs)
     return (
-        json.dumps(recommended, default=lambda o: o.__dict__, sort_keys=True, indent=4),
+        json.dumps(recommended, default=lambda o: o.__dict__,
+                   sort_keys=True, indent=4),
         200,
     )

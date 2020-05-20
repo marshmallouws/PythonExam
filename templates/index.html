@@ -58,7 +58,8 @@
         margin-top: 10px;
         list-style: none;
       }
-      .liked-title {
+      .liked-title,
+      .disliked-title {
         font-size: 20px;
         margin-top: 10px;
       }
@@ -69,8 +70,11 @@
         color: var(--teal);
       }
       .getrec-btn {
-        text-transform: uppercase;
         font-weight: 700;
+        background: var(--teal);
+      }
+      .btn {
+        text-transform: uppercase;
       }
       .song-item.popular {
         font-size: 20px;
@@ -154,15 +158,11 @@
               ></option>
               {% endfor %}
             </datalist>
-            <button type="button" class="btn btn-secondary" onclick="myFunc()">
-              Add song
+            <button type="button" class="btn btn-info" onclick="addSong(true)">
+              <i class="fa fas fa-thumbs-up mr-2"></i>Like song
             </button>
-            <button
-              type="button"
-              class="btn btn-info getrec-btn"
-              onclick="submitHandler()"
-            >
-              Get recommendation
+            <button type="button" class="btn btn-danger" onclick="addSong()">
+              <i class="fa fas fa-thumbs-down mr-2"></i>Dislike song
             </button>
             <input type="hidden" id="likedsongs" value="" />
           </form>
@@ -172,6 +172,10 @@
             Songs you like
           </h3>
           <ul id="list" name="list_s"></ul>
+          <h3 class="disliked-title text-danger" style="display: none;">
+            Songs you dislike
+          </h3>
+          <ul id="list-bad" name="list_b"></ul>
           <button
             id="clear-btn"
             type="button"
@@ -181,6 +185,13 @@
             <i class="fa fas fa-times mr-2"></i>Clear selection
           </button>
         </div>
+        <button
+          type="button"
+          class="mt-5 btn btn-success getrec-btn"
+          onclick="submitHandler()"
+        >
+          Get recommendation
+        </button>
       </div>
     </div>
     <div class="recommended">
@@ -201,8 +212,10 @@
   </body>
 
   <script>
-    let songAmount = 0;
-    function myFunc() {
+    let likedAmount = 0;
+    let dislikedAmount = 0;
+    $(".getrec-btn").prop("disabled", true);
+    function addSong(liked = false) {
       var input = document.getElementById("input-songs").value;
       if (input === "") {
         return;
@@ -221,45 +234,62 @@
       }
 
       if (found) {
-        var list = document.getElementById("list");
+        var list = document.getElementById(liked ? "list" : "list-bad");
         var li = document.createElement("li");
         let icon = document.createElement("i");
-        icon.classList.add("text-success", "fa", "fas", "fa-check", "mr-2");
+        icon.classList.add("fa", "fas", "mr-2");
+        icon.classList.add(liked ? "fa-thumbs-up" : "fa-thumbs-down");
+        icon.classList.add(liked ? "text-info" : "text-danger");
         li.appendChild(icon);
         li.appendChild(document.createTextNode(input));
         li.setAttribute("data-id", songId);
-        li.classList.add("song-selection");
+        li.classList.add(liked ? "song-selection" : "bad-selection");
         list.appendChild(li);
         document.getElementById("input-songs").value = "";
-        songAmount++;
+        liked ? likedAmount++ : dislikedAmount++;
         $("#clear-btn").show();
-        $(".liked-title").show();
+        liked ? $(".liked-title").show() : $(".disliked-title").show();
+        if (likedAmount > 0) $(".getrec-btn").prop("disabled", false);
       }
     }
 
     $("#clear-btn").click(() => {
-      songAmount = 0;
+      likedAmount = 0;
+      dislikedAmount = 0;
       $("#list").html("");
+      $("#list-bad").html("");
       $("#clear-btn").hide();
-      $(".liked-title").hide();
+      $(".liked-title, .disliked-title").hide();
+      $(".getrec-btn").prop("disabled", true);
     });
 
     async function submitHandler() {
-      if (songAmount <= 0) return;
+      if (likedAmount <= 0) return;
 
       $(".recommended-list").html("");
       $(".ph-text").hide();
       $(".lds-ring").show();
       $("button").prop("disabled", true);
-      const arr = [].map.call(
+      const likedarr = [].map.call(
         document.getElementsByClassName("song-selection"),
         function (o) {
           return o.getAttribute("data-id");
         }
       );
 
+      const dislikedarr = [].map.call(
+        document.getElementsByClassName("bad-selection"),
+        function (o) {
+          return o.getAttribute("data-id");
+        }
+      );
+
       const url = document.getElementById("inputform").getAttribute("action");
-      let result = await postData(url, arr);
+      let result = await postData(url, [likedarr, dislikedarr]).catch(
+        function () {
+          return false;
+        }
+      );
       console.log(result);
       if (result && result.length > 0) {
         $(".lds-ring").hide();
