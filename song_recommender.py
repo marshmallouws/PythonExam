@@ -103,13 +103,11 @@ def calculate_largest_differnce(liked_songs, disliked_songs):
         if diff > 1:
             diff = diff / 100
 
-        print(c, diff)
         if diff > largest_difference:
             largest_difference = abs(l - d)
             column = c
 
     if largest_difference > 0.1:
-        print(column)
         return column
     else:
         return "tempo"

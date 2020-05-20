@@ -1,10 +1,12 @@
 from flask import Flask, render_template, Markup, request, jsonify, abort
+from flask_cors import CORS
 import pandas as pd
 import data_handler
 import json
 from song_recommender import recommend_songs
 
 app = Flask(__name__)
+CORS(app)
 
 data = data_handler.clean_data()
 
