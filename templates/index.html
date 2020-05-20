@@ -48,12 +48,20 @@
         padding-bottom: 50px;
       }
       .recommended {
+        padding-top: 50px;
         background: var(--teal);
         color: #f1f1f1;
         padding-bottom: 50px;
       }
       body {
-        background: var(--teal);
+        background: var(--cyan);
+      }
+      footer {
+        padding: 50px;
+        text-align: center;
+      }
+      footer p {
+        margin: 0;
       }
       .hr-spacer.light hr {
         border-top: 1px solid rgba(255, 255, 255, 0.3);
@@ -234,12 +242,16 @@
           <div></div>
         </div>
         <div class="recommended-list"></div>
-        <div class="hr-spacer light mt-5 mb-2">
-          <hr />
-        </div>
-        <div class="result-plot mt"></div>
       </div>
     </div>
+    <div class="page plot-wrapper" style="display: none;">
+      <div class="content-wrapper">
+        <div class="result-plot"></div>
+      </div>
+    </div>
+    <footer style="text-align: center;">
+      <p class="text-white">&copy; python exam</p>
+    </footer>
   </body>
 
   <script>
@@ -330,6 +342,7 @@
 
     async function submitHandler() {
       if (likedAmount <= 0) return;
+      $(".plot-wrapper").hide();
       $(".result-plot").html("");
       $(".recommended-list").html("");
       $(".ph-text").hide();
@@ -378,6 +391,7 @@
             .replace("b'", "")
             .replace("'", "")}" />`
         );
+        $(".plot-wrapper").show();
         $("html, body").animate(
           {
             scrollTop: $(".recommended").offset().top,

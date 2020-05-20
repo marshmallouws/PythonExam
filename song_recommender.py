@@ -206,12 +206,19 @@ def plot_trend(highest_difference, liked_songs, disliked_songs, recommended_song
                 color="#dc3545", label="Disliked", zorder=2)
 
     plt.bar(recommended_songs['song_name'],
-            recommended_songs[highest_difference], color="#f1f1f1", label="Recommended")
+            recommended_songs[highest_difference], color="#20c997", label="Recommended")
 
     plt.xticks(horizontalalignment="left", rotation=-45)
+
+    total_selections = liked_songs.shape[0] + disliked_songs.shape[0]
+    for i in range(total_selections + recommended_songs.shape[0]):
+        tick_color = "#17a2b8" if i < liked_songs.shape[
+            0] else "#20c997" if i >= total_selections else "#dc3545"
+        plt.gca().get_xticklabels()[i].set_color(tick_color)
+
     plt.ylabel(highest_difference)
     plt.tight_layout()
-    plt.legend()
+    _ = plt.legend()
 
     stringio = BytesIO()
     plt.savefig(stringio, format="png", transparent=True)
