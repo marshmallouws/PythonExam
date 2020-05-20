@@ -58,15 +58,6 @@ def data_to_classes():
         pass
 
 
-def data_to_json():
-    song_info = pd.read_csv("data/song_info.csv")
-    df = clean_data(song_info)
-
-    for idx, row in df.iterrows():
-        pass
-        # print(idx)
-
-
 panda = pd.read_csv("data/song_data.csv")
 df = clean_data()
 print(df.head())
