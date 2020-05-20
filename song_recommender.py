@@ -77,7 +77,7 @@ def calculate_largest_differnce(liked_songs, disliked_songs):
     
     Returns:
     column: String - value of attributed with biggest difference between liked and disliked
-    ?????? liked_mean: mean of the attribute with highest difference.
+    liked_mean: mean of the attribute with highest difference.
     """
     largest_difference = 0
     column = ""
@@ -88,8 +88,6 @@ def calculate_largest_differnce(liked_songs, disliked_songs):
         "instrumentalness",
         "liveness",
         "audio_mode",
-        "loudness",
-        "tempo",
         "speechiness",
     ]
 
@@ -97,11 +95,20 @@ def calculate_largest_differnce(liked_songs, disliked_songs):
         l = liked_songs[c].mean()
         d = disliked_songs[c].mean()
 
-        if abs(l - d) > largest_difference:
+        diff = abs(l - d)
+
+        if diff > 1:
+            diff = diff / 100
+
+        print(c, diff)
+        if diff > largest_difference:
             largest_difference = abs(l - d)
             column = c
 
-    return column
+    if largest_difference > 0.05:
+        return column
+    else:
+        return "tempo"
 
 
 def plot_duration():
