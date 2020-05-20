@@ -23,8 +23,6 @@ def recommend_songs(liked_idxs, disliked_idxs):
     else:
         largest_difference = "tempo"
 
-    plot_ = plot(largest_difference, liked_songs, disliked_songs)
-
     avg_attr = liked_songs[largest_difference].mean()
     # average_tempo = liked["tempo"].mean()
 
@@ -63,6 +61,10 @@ def recommend_songs(liked_idxs, disliked_idxs):
          avg_attr).abs().argsort().head(10)
     ]
 
+    #plot_ = plot(largest_difference, liked_songs, disliked_songs)
+    plot_ = plot_trend(largest_difference, liked_songs,
+                       disliked_songs, recommended_songs)
+
     liked_idxs = []
     for idx, song in recommended_songs.iterrows():
         s = Song(
@@ -74,7 +76,7 @@ def recommend_songs(liked_idxs, disliked_idxs):
         )
         liked_idxs.append(s)
 
-    return [liked_idxs, str(plot_)]
+    return [liked_idxs, plot_]
 
 
 def calculate_largest_differnce(liked_songs, disliked_songs):
@@ -118,7 +120,6 @@ def calculate_largest_differnce(liked_songs, disliked_songs):
 
 
 def plot(highest_difference, liked_songs, disliked_songs):
-    colors = ["r", "b"]
     all_songs = liked_songs.append(disliked_songs)
     lowest = min(all_songs[highest_difference])
     highest = max(all_songs[highest_difference])
@@ -176,19 +177,49 @@ def plot(highest_difference, liked_songs, disliked_songs):
     plot = plt.figure()
     plt.xticks(xpos, plot_liked.keys())
     plt.bar(xpos - 0.2, plot_liked.values(),
-            width=0.4, color="r", label="Liked songs")
+            width=0.4, color="#17a2b8", label="Liked songs")
     plt.bar(
-        xpos + 0.2, plot_disliked.values(), width=0.4, color="b", label="Disliked songs"
+        xpos + 0.2, plot_disliked.values(), width=0.4, color="#dc3545", label="Disliked songs"
     )
     plt.xticks(horizontalalignment="left", rotation=-45)
     plt.legend()
 
     stringio = BytesIO()
-    plot.savefig(stringio, format="png")
+    plot.savefig(stringio, format="png", transparent=True)
     stringio.seek(0)
     base64_image = base64.b64encode(stringio.read())
 
-    return base64_image
+    return {"trend": highest_difference, "image": str(base64_image)}
+
+
+def plot_trend(highest_difference, liked_songs, disliked_songs, recommended_songs):
+    plt.figure(figsize=(8, 6))
+    plt.bar(liked_songs['song_name'], liked_songs[highest_difference].mean(),
+            color="#28a745")
+    plt.bar(liked_songs['song_name'], liked_songs[highest_difference],
+            color="#17a2b8", label="Liked")
+    plt.axhline(liked_songs[highest_difference].mean(), color='#28a745',
+                linewidth=1, label='Liked {:s} average'.format(highest_difference), ls="--", zorder=1)
+
+    if disliked_songs.shape[0] > 0:
+        plt.bar(disliked_songs['song_name'], disliked_songs[highest_difference],
+                color="#dc3545", label="Disliked", zorder=2)
+
+    plt.bar(recommended_songs['song_name'],
+            recommended_songs[highest_difference], color="#f1f1f1", label="Recommended")
+
+    plt.xticks(horizontalalignment="left", rotation=-45)
+    plt.ylabel(highest_difference)
+    plt.tight_layout()
+    plt.legend()
+
+    stringio = BytesIO()
+    plt.savefig(stringio, format="png", transparent=True)
+    stringio.seek(0)
+    base64_image = base64.b64encode(stringio.read())
+    plt.close()
+
+    return {"trend": highest_difference, "image": str(base64_image)}
 
 
 def plot_tempo():

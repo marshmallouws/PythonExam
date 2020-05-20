@@ -55,6 +55,9 @@
       body {
         background: var(--teal);
       }
+      .hr-spacer.light hr {
+        border-top: 1px solid rgba(255, 255, 255, 0.3);
+      }
       #list,
       #list-bad {
         margin-top: 10px;
@@ -79,6 +82,9 @@
       .btn {
         text-transform: uppercase;
       }
+      .song-item {
+        padding: 5px 0 5px 0;
+      }
       .song-item.popular {
         font-size: 20px;
         font-weight: 500;
@@ -91,8 +97,14 @@
         padding: 5px 0 5px 0;
       }
 
-      img.plot-img {
-        border: 4px solid var(--secondary);
+      .song-item-divider {
+        width: 100px;
+        margin-top: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .trend-info {
+        margin-top: -10px;
       }
 
       .lds-ring {
@@ -222,7 +234,7 @@
           <div></div>
         </div>
         <div class="recommended-list"></div>
-        <div class="hr-spacer mt-5 mb-2">
+        <div class="hr-spacer light mt-5 mb-2">
           <hr />
         </div>
         <div class="result-plot mt"></div>
@@ -318,7 +330,7 @@
 
     async function submitHandler() {
       if (likedAmount <= 0) return;
-
+      $(".result-plot").html("");
       $(".recommended-list").html("");
       $(".ph-text").hide();
       $(".lds-ring").show();
@@ -356,11 +368,13 @@
               popular
                 ? "<span><i class='fa fas fa-fire'></i> POPULAR</span>"
                 : ""
-            }</div>`;
+            }<div class="song-item-divider"></div></div>`;
           })
         );
         $(".result-plot").html(
-          `<h2 class="regular-title mb-2">We noticed a trend in your selection</h2><img class="plot-img" src="data:image/png;base64, ${result[1]
+          `<h2 class="regular-title">We noticed a trend in your selection</h2><p class="trend-info">There's a trend in the <strong>${
+            result[1].trend
+          }</strong> of your selection. Have a look at this chart:</p><img class="plot-img d-block" src="data:image/png;base64, ${result[1].image
             .replace("b'", "")
             .replace("'", "")}" />`
         );
