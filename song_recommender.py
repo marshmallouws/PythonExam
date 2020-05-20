@@ -106,7 +106,7 @@ def calculate_largest_differnce(liked_songs, disliked_songs):
             largest_difference = abs(l - d)
             column = c
 
-    if largest_difference > 0.05:
+    if largest_difference > 0.10:
         print(column)
         return column
     else:

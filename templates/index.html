@@ -86,6 +86,10 @@
         color: var(--warning);
       }
 
+      .song-list li {
+        padding: 5px 0 5px 0;
+      }
+
       .lds-ring {
         display: inline-block;
         position: relative;
@@ -174,15 +178,15 @@
           <h3 class="liked-title text-info" style="display: none;">
             Songs you like
           </h3>
-          <ul id="list" name="list_s"></ul>
+          <ul id="list" class="song-list" name="list_s"></ul>
           <h3 class="disliked-title text-danger" style="display: none;">
             Songs you dislike
           </h3>
-          <ul id="list-bad" name="list_b"></ul>
+          <ul id="list-bad" class="song-list" name="list_b"></ul>
           <button
             id="clear-btn"
             type="button"
-            class="btn btn-warning btn-sm"
+            class="btn btn-warning btn-sm mt-3"
             style="display: none;"
           >
             <i class="fa fas fa-times mr-2"></i>Clear selection
@@ -242,10 +246,22 @@
       if (found) {
         var list = document.getElementById(liked ? "list" : "list-bad");
         var li = document.createElement("li");
+        let button = document.createElement("button");
+        button.classList.add(
+          "btn",
+          "btn-warning",
+          "btn-sm",
+          "mr-2",
+          "remove-selection"
+        );
+        let buttonicon = document.createElement("i");
+        buttonicon.classList.add("fa", "fas", "fa-times");
+        button.appendChild(buttonicon);
         let icon = document.createElement("i");
         icon.classList.add("fa", "fas", "mr-2");
         icon.classList.add(liked ? "fa-thumbs-up" : "fa-thumbs-down");
         icon.classList.add(liked ? "text-info" : "text-danger");
+        li.appendChild(button);
         li.appendChild(icon);
         li.appendChild(document.createTextNode(input));
         li.setAttribute("data-id", songId);
@@ -256,18 +272,40 @@
         $("#clear-btn").show();
         liked ? $(".liked-title").show() : $(".disliked-title").show();
         if (likedAmount > 0) $(".getrec-btn").prop("disabled", false);
+
+        $(".remove-selection").off();
+        $(".remove-selection").click((e) => {
+          $(e.target).closest("li").hasClass("song-selection")
+            ? likedAmount--
+            : dislikedAmount--;
+          $(e.target).closest("li").remove();
+          doClear();
+        });
       }
     }
 
     $("#clear-btn").click(() => {
       likedAmount = 0;
       dislikedAmount = 0;
-      $("#list").html("");
-      $("#list-bad").html("");
-      $("#clear-btn").hide();
-      $(".liked-title, .disliked-title").hide();
-      $(".getrec-btn").prop("disabled", true);
+      doClear();
     });
+
+    function doClear() {
+      if (likedAmount <= 0 && dislikedAmount <= 0) {
+        $("#list").html("");
+        $("#list-bad").html("");
+        $("#clear-btn").hide();
+        $(".liked-title, .disliked-title").hide();
+        $(".getrec-btn").prop("disabled", true);
+      } else if (likedAmount > 0 && dislikedAmount <= 0) {
+        $("#list-bad").html("");
+        $(".disliked-title").hide();
+      } else if (likedAmount <= 0 && dislikedAmount > 0) {
+        $("#list").html("");
+        $(".liked-title").hide();
+        $(".getrec-btn").prop("disabled", true);
+      }
+    }
 
     async function submitHandler() {
       if (likedAmount <= 0) return;
