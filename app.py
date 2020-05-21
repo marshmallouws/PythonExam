@@ -37,3 +37,13 @@ def make_song_list():
                    sort_keys=True, indent=4),
         200,
     )
+
+
+@app.route('/suggest', methods=['GET'])
+def autocomplete():
+    search = request.args.get('q')
+    results = data[data['song_name'].str.contains(
+        search, case=False) | data['artist_name'].str.contains(search, case=False)]
+    songs = [{"label": song.loc["song_name"]+" - "+song.loc["artist_name"],
+              "value": idx} for idx, song in results.iterrows()]
+    return jsonify(matching_results=songs)
