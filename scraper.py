@@ -73,6 +73,7 @@ def search2(song_info):
     print(response.status_code)
     soup = bs4.BeautifulSoup(response.content, "html.parser")
     comment = soup.find("ul", {"class": "songfacts-results"})
+    comment = comment.find("li") if comment is not None else None
     result = "We couldn't find much buzz about this song :(" if comment is None else comment.getText(
     )
     return result
