@@ -21,6 +21,15 @@
       href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
       rel="stylesheet"
     />
+    <link
+      href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"
+      rel="stylesheet"
+    />
+    <script
+      src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+      integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+      crossorigin="anonymous"
+    ></script>
 
     <style>
       .content-wrapper {
@@ -42,18 +51,36 @@
       header h1 {
         font-family: "Pacifico", cursive;
       }
+      #input-songs {
+        display: inline-block;
+      }
+
+      #input-songs-disabled {
+        display: none;
+      }
       .page {
         padding-top: 50px;
         background: #f1f1f1;
         padding-bottom: 50px;
       }
       .recommended {
+        padding-top: 50px;
         background: var(--teal);
         color: #f1f1f1;
         padding-bottom: 50px;
       }
       body {
-        background: var(--teal);
+        background: var(--cyan);
+      }
+      footer {
+        padding: 50px;
+        text-align: center;
+      }
+      footer p {
+        margin: 0;
+      }
+      .hr-spacer.light hr {
+        border-top: 1px solid rgba(255, 255, 255, 0.3);
       }
       #list,
       #list-bad {
@@ -79,6 +106,9 @@
       .btn {
         text-transform: uppercase;
       }
+      .song-item {
+        padding: 5px 0 5px 0;
+      }
       .song-item.popular {
         font-size: 20px;
         font-weight: 500;
@@ -89,6 +119,16 @@
 
       .song-list li {
         padding: 5px 0 5px 0;
+      }
+
+      .song-item-divider {
+        width: 100px;
+        margin-top: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .trend-info {
+        margin-top: -10px;
       }
 
       .lds-ring {
@@ -150,9 +190,16 @@
           </small>
           <form id="inputform" action="http://localhost:5000/" method="POST">
             <input
-              class="form-control d-inline-block"
+              class="form-control"
               type="text"
               id="input-songs"
+              placeholder="Start writing the name of a song or artist"
+              style="width: 100%; max-width: 500px; padding-top: 1px;"
+            />
+            <input
+              class="form-control"
+              type="text"
+              id="input-songs-disabled"
               name="song"
               list="songnames"
               placeholder="Start writing the name of a song or artist"
@@ -220,11 +267,20 @@
         <div class="recommended-list"></div>
       </div>
     </div>
+    <div class="page plot-wrapper" style="display: none;">
+      <div class="content-wrapper">
+        <div class="result-plot"></div>
+      </div>
+    </div>
+    <footer style="text-align: center;">
+      <p class="text-white">&copy; python exam</p>
+    </footer>
   </body>
 
   <script>
     let likedAmount = 0;
     let dislikedAmount = 0;
+    let currentSelection = null;
     $(".getrec-btn").prop("disabled", true);
     function addSong(liked = false) {
       var input = document.getElementById("input-songs").value;
@@ -245,6 +301,14 @@
       }
 
       if (found) {
+        if (
+          getSelection().includes(songId) ||
+          getSelection(false).includes(songId)
+        ) {
+          $("#input-songs").val("");
+          return;
+        }
+
         var list = document.getElementById(liked ? "list" : "list-bad");
         var li = document.createElement("li");
         let button = document.createElement("button");
@@ -310,25 +374,15 @@
 
     async function submitHandler() {
       if (likedAmount <= 0) return;
-
+      $(".plot-wrapper").hide();
+      $(".result-plot").html("");
       $(".recommended-list").html("");
       $(".ph-text").hide();
       $(".lds-ring").show();
       $("button").prop("disabled", true);
-      const likedarr = [].map.call(
-        document.getElementsByClassName("song-selection"),
-        function (o) {
-          return o.getAttribute("data-id");
-        }
-      );
 
-      const dislikedarr = [].map.call(
-        document.getElementsByClassName("bad-selection"),
-        function (o) {
-          return o.getAttribute("data-id");
-        }
-      );
-
+      const likedarr = getSelection();
+      const dislikedarr = getSelection(false);
       const url = document.getElementById("inputform").getAttribute("action");
       let result = await postData(url, [likedarr, dislikedarr]).catch(
         function () {
@@ -336,11 +390,11 @@
         }
       );
       console.log(result);
-      if (result && result.length > 0) {
+      if (result && result[0].length > 0) {
         $(".lds-ring").hide();
         $("button").prop("disabled", false);
         $(".recommended-list").html(
-          result.map((s) => {
+          result[0].map((s) => {
             const popular = s._popularity > 70 ? true : false;
             return `<div class="song-item ${
               popular ? "popular" : ""
@@ -348,9 +402,17 @@
               popular
                 ? "<span><i class='fa fas fa-fire'></i> POPULAR</span>"
                 : ""
-            }</div>`;
+            }<div class="song-item-divider"></div></div>`;
           })
         );
+        $(".result-plot").html(
+          `<h2 class="regular-title">We noticed a trend in your selection</h2><p class="trend-info">There's a trend in the <strong>${
+            result[1].trend
+          }</strong> of your selection. Have a look at this chart:</p><img class="plot-img d-block" src="data:image/png;base64, ${result[1].image
+            .replace("b'", "")
+            .replace("'", "")}" />`
+        );
+        $(".plot-wrapper").show();
         $("html, body").animate(
           {
             scrollTop: $(".recommended").offset().top,
@@ -375,9 +437,54 @@
       return response.json();
     }
 
+    function getSelection(liked = true) {
+      if (liked) {
+        const likedarr = [].map.call(
+          document.getElementsByClassName("song-selection"),
+          function (o) {
+            return o.getAttribute("data-id");
+          }
+        );
+        return likedarr;
+      } else {
+        const dislikedarr = [].map.call(
+          document.getElementsByClassName("bad-selection"),
+          function (o) {
+            return o.getAttribute("data-id");
+          }
+        );
+        return dislikedarr;
+      }
+    }
+
     $("#inputform").submit((e) => {
       e.preventDefault();
       myFunc();
+    });
+
+    $("#input-songs").autocomplete({
+      source: function (request, response) {
+        $.getJSON(
+          "/suggest",
+          {
+            q: request.term,
+          },
+          function (data) {
+            response(data.matching_results);
+          }
+        );
+      },
+      minLength: 2,
+      select: function (event, ui) {
+        $("#input-songs").val(ui.item.label);
+        currentSelection = ui.item.value;
+        return false;
+      },
+      focus: function (event, ui) {
+        $("#input-songs").val(ui.item.label);
+        currentSelection = ui.item.value;
+        return false;
+      },
     });
   </script>
 </html>
