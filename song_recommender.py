@@ -160,24 +160,24 @@ def plot(highest_difference, liked_songs, disliked_songs, recommended_songs):
         tmp = song[highest_difference]
         if tmp < rnge[1]:
             plot_liked[rnge1] += 1
-        if tmp > rnge[1] and tmp < rnge[2]:
+        elif tmp > rnge[1] and tmp < rnge[2]:
             plot_liked[rnge2] += 1
-        if tmp > rnge[2] and tmp < rnge[3]:
+        elif tmp > rnge[2] and tmp < rnge[3]:
             plot_liked[rnge3] += 1
-        if tmp > rnge[3] and tmp < rnge[4]:
+        elif tmp > rnge[3] and tmp < rnge[4]:
             plot_liked[rnge4] += 1
         else:
             plot_liked[rnge5] += 1
 
     for __, song in disliked_songs.iterrows():
         tmp = song[highest_difference]
-        if tmp < rnge[1]:
+        if tmp > rnge[1]:
             plot_disliked[rnge1] += 1
-        if tmp > rnge[1] and tmp < rnge[2]:
+        elif tmp > rnge[1] and tmp < rnge[2]:
             plot_disliked[rnge2] += 1
-        if tmp > rnge[2] and tmp < rnge[3]:
+        elif tmp > rnge[2] and tmp < rnge[3]:
             plot_disliked[rnge3] += 1
-        if tmp > rnge[3] and tmp < rnge[4]:
+        elif tmp > rnge[3] and tmp < rnge[4]:
             plot_disliked[rnge4] += 1
         else:
             plot_disliked[rnge5] += 1
@@ -186,14 +186,18 @@ def plot(highest_difference, liked_songs, disliked_songs, recommended_songs):
         tmp = song[highest_difference]
         if tmp < rnge[1]:
             plot_rec[rnge1] += 1
-        if tmp > rnge[1] and tmp < rnge[2]:
+        elif tmp > rnge[1] and tmp < rnge[2]:
             plot_rec[rnge2] += 1
-        if tmp > rnge[2] and tmp < rnge[3]:
+        elif tmp > rnge[2] and tmp < rnge[3]:
             plot_rec[rnge3] += 1
-        if tmp > rnge[3] and tmp < rnge[4]:
+        elif tmp > rnge[3] and tmp < rnge[4]:
             plot_rec[rnge4] += 1
         else:
             plot_rec[rnge5] += 1
+
+    print("liked", plot_liked)
+    print("disliked", plot_disliked)
+    print("recommended", plot_rec)
 
     xpos = np.arange(len(plot_liked.keys()))
     plot = plt.figure()
@@ -209,7 +213,7 @@ def plot(highest_difference, liked_songs, disliked_songs, recommended_songs):
         label="Disliked songs",
     )
     plt.bar(
-        xpos, plot_rec.values(), width=0.2, color="y", label="Recommended songs",
+        xpos, plot_rec.values(), width=0.2, color="#20c997", label="Recommended songs",
     )
 
     plt.xticks(horizontalalignment="left", rotation=-45)
