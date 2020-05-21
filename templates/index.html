@@ -357,6 +357,8 @@
       $(".lds-ring").show();
       $("button").prop("disabled", true);
 
+      const likedarr = getSelection();
+      const dislikedarr = getSelection(false);
       const url = document.getElementById("inputform").getAttribute("action");
       let result = await postData(url, [likedarr, dislikedarr]).catch(
         function () {
