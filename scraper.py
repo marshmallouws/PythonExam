@@ -4,14 +4,27 @@ import re
 from selenium import webdriver
 from time import sleep
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.firefox.options import Options
+
+# from selenium.webdriver.firefox.options import Options
 
 
 def search(songname, artist):
     url = "https://www.genius.com"
-    browser = webdriver.Firefox()
+
+    options = Options()
+    options.headless = True
+    # op = webdriver.FirefoxOptions()
+    # op.add_argument("headless")
+
+    browser = webdriver.Firefox(options=options)
     browser.get(url)
     browser.implicitly_wait(3)
     query = songname + " " + artist
+
+    # op = webdriver.ChromeOptions()
+    # op.add_argument('headless')
+    # driver = webdriver.Chrome(options=op)
 
     search_field = browser.find_element_by_name("q")
     search_field.clear()
