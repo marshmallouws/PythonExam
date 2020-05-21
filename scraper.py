@@ -62,9 +62,9 @@ def search(song_info):
 
 def search2(song_info):
     artist = re.sub(
-        r"\(.*\)", "", song_info['artist_name'].replace("'", "")).strip().replace(" ", "-")
+        r"\(.*\)", "", song_info['artist_name'].replace("'", "")).strip().replace(" ", "-").replace(".", "")
     song = re.sub(
-        r"\(.*\)", "", song_info['song_name'].replace("'", "")).strip().replace(" ", "-")
+        r"\(.*\)||(\ \-\ .*)", "", song_info['song_name'].replace("'", "")).strip().replace(" ", "-").replace(".", "")
 
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
