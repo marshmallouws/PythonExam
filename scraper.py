@@ -9,7 +9,7 @@ from selenium.webdriver.firefox.options import Options
 # from selenium.webdriver.firefox.options import Options
 
 
-def search(songname, artist):
+def search(song_info):
     url = "https://www.genius.com"
 
     options = Options()
@@ -20,7 +20,7 @@ def search(songname, artist):
     browser = webdriver.Firefox(options=options)
     browser.get(url)
     browser.implicitly_wait(3)
-    query = songname + " " + artist
+    query = song_info['song_name'] + " " + song_info['artist_name']
 
     # op = webdriver.ChromeOptions()
     # op.add_argument('headless')
@@ -58,4 +58,4 @@ def search(songname, artist):
     return arr[0]
 
 
-search("blank space", "taylor swift")
+#search("blank space", "taylor swift")

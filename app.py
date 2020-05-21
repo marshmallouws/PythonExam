@@ -4,6 +4,7 @@ import pandas as pd
 import data_handler
 import json
 from song_recommender import recommend_songs
+from scraper import search
 
 app = Flask(__name__)
 CORS(app)
@@ -47,3 +48,10 @@ def autocomplete():
     songs = [{"label": song.loc["song_name"]+" - "+song.loc["artist_name"],
               "value": idx} for idx, song in results.iterrows()]
     return jsonify(matching_results=songs)
+
+
+@app.route('/songinfo', methods=['POST'])
+def song_info():
+    song_info = data.iloc[int(request.json)]
+    result = search(song_info)
+    return jsonify(result)

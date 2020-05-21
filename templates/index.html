@@ -127,6 +127,12 @@
         border-top: 1px solid rgba(255, 255, 255, 0.3);
       }
 
+      .song-info-wrapper {
+        font-style: italic;
+        font-size: 1rem;
+        font-weight: normal;
+      }
+
       .trend-info {
         margin-top: -10px;
       }
@@ -169,6 +175,39 @@
         }
         100% {
           transform: rotate(360deg);
+        }
+      }
+
+      .lds-ripple {
+        display: inline-block;
+        position: relative;
+        width: 40px;
+        height: 40px;
+      }
+      .lds-ripple div {
+        position: absolute;
+        border: 4px solid #fff;
+        opacity: 1;
+        border-radius: 50%;
+        animation: lds-ripple 1s cubic-bezier(0, 0.1, 0.4, 1) infinite;
+      }
+      .lds-ripple div:nth-child(2) {
+        animation-delay: -0.5s;
+      }
+      @keyframes lds-ripple {
+        0% {
+          top: 18px;
+          left: 18px;
+          width: 0;
+          height: 0;
+          opacity: 1;
+        }
+        100% {
+          top: 0px;
+          left: 0px;
+          width: 36px;
+          height: 36px;
+          opacity: 0;
         }
       }
     </style>
@@ -403,11 +442,17 @@
             const popular = s._popularity > 70 ? true : false;
             return `<div class="song-item ${
               popular ? "popular" : ""
-            }"><i class="fa fas fa-music mr-2"></i>${s._name} - ${s._artist} ${
+            }"><button class="btn btn-info btn-sm mr-2 learn-more-btn" data-id="${
+              s._idx
+            }" title="Learn more about this song"><i class="fas fa fa-info"></i></button><i class="fa fas fa-music mr-2"></i>${
+              s._name
+            } - ${s._artist} ${
               popular
                 ? "<span><i class='fa fas fa-fire'></i> POPULAR</span>"
                 : ""
-            }<div class="song-item-divider"></div></div>`;
+            }<div class="song-info-wrapper" data-id="${
+              s._idx
+            }"></div><div class="song-item-divider"></div></div>`;
           })
         );
         $(".result-plot").html(
@@ -423,6 +468,24 @@
             .replace("'", "")}" />`
         );
         $(".plot-wrapper").show();
+        $(".learn-more-btn").off();
+        $(".learn-more-btn").click(async (e) => {
+          $(e.target).closest("button").prop("disabled", true);
+          const id = $(e.target).closest("button").data("id");
+          $(`.song-info-wrapper[data-id='${id}']`).html(
+            '<div class="lds-ripple"><div></div><div></div></div>'
+          );
+          let result = await postData("/songinfo", id).catch(function () {
+            $(e.target).closest("button").prop("disabled", false);
+            $(`.song-info-wrapper[data-id='${id}']`).html("");
+            return false;
+          });
+          if (result) {
+            $(e.target).closest("button").prop("disabled", false);
+            $(`.song-info-wrapper[data-id='${id}']`).html(result);
+          }
+        });
+
         $("html, body").animate(
           {
             scrollTop: $(".recommended").offset().top,
