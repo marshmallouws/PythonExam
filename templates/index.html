@@ -21,6 +21,15 @@
       href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
       rel="stylesheet"
     />
+    <link
+      href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"
+      rel="stylesheet"
+    />
+    <script
+      src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+      integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+      crossorigin="anonymous"
+    ></script>
 
     <style>
       .content-wrapper {
@@ -41,6 +50,13 @@
       }
       header h1 {
         font-family: "Pacifico", cursive;
+      }
+      #input-songs {
+        display: inline-block;
+      }
+
+      #input-songs-disabled {
+        display: none;
       }
       .page {
         padding-top: 50px;
@@ -174,9 +190,16 @@
           </small>
           <form id="inputform" action="http://localhost:5000/" method="POST">
             <input
-              class="form-control d-inline-block"
+              class="form-control"
               type="text"
               id="input-songs"
+              placeholder="Start writing the name of a song or artist"
+              style="width: 100%; max-width: 500px; padding-top: 1px;"
+            />
+            <input
+              class="form-control"
+              type="text"
+              id="input-songs-disabled"
               name="song"
               list="songnames"
               placeholder="Start writing the name of a song or artist"
@@ -257,6 +280,7 @@
   <script>
     let likedAmount = 0;
     let dislikedAmount = 0;
+    let currentSelection = null;
     $(".getrec-btn").prop("disabled", true);
     function addSong(liked = false) {
       var input = document.getElementById("input-songs").value;
@@ -436,6 +460,31 @@
     $("#inputform").submit((e) => {
       e.preventDefault();
       myFunc();
+    });
+
+    $("#input-songs").autocomplete({
+      source: function (request, response) {
+        $.getJSON(
+          "/suggest",
+          {
+            q: request.term,
+          },
+          function (data) {
+            response(data.matching_results);
+          }
+        );
+      },
+      minLength: 2,
+      select: function (event, ui) {
+        $("#input-songs").val(ui.item.label);
+        currentSelection = ui.item.value;
+        return false;
+      },
+      focus: function (event, ui) {
+        $("#input-songs").val(ui.item.label);
+        currentSelection = ui.item.value;
+        return false;
+      },
     });
   </script>
 </html>
