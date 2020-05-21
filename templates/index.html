@@ -277,6 +277,14 @@
       }
 
       if (found) {
+        if (
+          getSelection().includes(songId) ||
+          getSelection(false).includes(songId)
+        ) {
+          $("#input-songs").val("");
+          return;
+        }
+
         var list = document.getElementById(liked ? "list" : "list-bad");
         var li = document.createElement("li");
         let button = document.createElement("button");
@@ -348,19 +356,6 @@
       $(".ph-text").hide();
       $(".lds-ring").show();
       $("button").prop("disabled", true);
-      const likedarr = [].map.call(
-        document.getElementsByClassName("song-selection"),
-        function (o) {
-          return o.getAttribute("data-id");
-        }
-      );
-
-      const dislikedarr = [].map.call(
-        document.getElementsByClassName("bad-selection"),
-        function (o) {
-          return o.getAttribute("data-id");
-        }
-      );
 
       const url = document.getElementById("inputform").getAttribute("action");
       let result = await postData(url, [likedarr, dislikedarr]).catch(
@@ -414,6 +409,26 @@
         body: JSON.stringify(data),
       });
       return response.json();
+    }
+
+    function getSelection(liked = true) {
+      if (liked) {
+        const likedarr = [].map.call(
+          document.getElementsByClassName("song-selection"),
+          function (o) {
+            return o.getAttribute("data-id");
+          }
+        );
+        return likedarr;
+      } else {
+        const dislikedarr = [].map.call(
+          document.getElementsByClassName("bad-selection"),
+          function (o) {
+            return o.getAttribute("data-id");
+          }
+        );
+        return dislikedarr;
+      }
     }
 
     $("#inputform").submit((e) => {
