@@ -2,11 +2,8 @@ import bs4
 import requests
 import re
 from selenium import webdriver
-from time import sleep
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options
-
-# from selenium.webdriver.firefox.options import Options
 
 
 def search(song_info):
@@ -14,17 +11,11 @@ def search(song_info):
 
     options = Options()
     options.headless = True
-    # op = webdriver.FirefoxOptions()
-    # op.add_argument("headless")
 
     browser = webdriver.Firefox(options=options)
     browser.get(url)
     browser.implicitly_wait(3)
-    query = song_info['song_name'] + " " + song_info['artist_name']
-
-    # op = webdriver.ChromeOptions()
-    # op.add_argument('headless')
-    # driver = webdriver.Chrome(options=op)
+    query = song_info["song_name"] + " " + song_info["artist_name"]
 
     search_field = browser.find_element_by_name("q")
     search_field.clear()
@@ -34,11 +25,6 @@ def search(song_info):
     print(a)
     a[0].click()
 
-    # link = browser.find_element_by_css_selector("[href^=#about]")
-    # link = browser.find_element_by_xpath('//a[@href="#about"]')
-    # print("--------------------------", link)
-    # browser.implicitly_wait(3)
-    # link.click()
     browser.implicitly_wait(3)
 
     response = requests.get(browser.current_url)
@@ -51,29 +37,39 @@ def search(song_info):
         else re.sub(r"^https?:\/\/.*[\r\n]*", "", comment.getText(), flags=re.MULTILINE)
     )
 
-    # print(result)
-
+    browser.close()
     arr = result.split("\n")
     print(arr[0])
     return arr[0]
 
 
-#search("blank space", "taylor swift")
-
 def search2(song_info):
-    artist = re.sub(
-        r"\(.*\)", "", song_info['artist_name'].replace("'", "")).strip().replace(" ", "-").replace(".", "")
-    song = re.sub(
-        r"\(.*\)||(\ \-\ .*)", "", song_info['song_name'].replace("'", "")).strip().replace(" ", "-").replace(".", "")
+    artist = (
+        re.sub(r"\(.*\)", "", song_info["artist_name"].replace("'", ""))
+        .strip()
+        .replace(" ", "-")
+        .replace(".", "")
+    )
+    song = (
+        re.sub(r"\(.*\)||(\ \-\ .*)", "", song_info["song_name"].replace("'", ""))
+        .strip()
+        .replace(" ", "-")
+        .replace(".", "")
+    )
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36"
+    }
     response = requests.get(
-        "https://www.songfacts.com/facts/"+artist+"/"+song, headers=headers)
+        "https://www.songfacts.com/facts/" + artist + "/" + song, headers=headers
+    )
     print(response.status_code)
     soup = bs4.BeautifulSoup(response.content, "html.parser")
     comment = soup.find("ul", {"class": "songfacts-results"})
     comment = comment.find("li") if comment is not None else None
-    result = "We couldn't find much buzz about this song :(" if comment is None else comment.getText(
+    result = (
+        "We couldn't find much buzz about this song :("
+        if comment is None
+        else comment.getText()
     )
     return result

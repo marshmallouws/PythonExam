@@ -18,13 +18,11 @@ def recommend_songs(liked_idxs, disliked_idxs):
     disliked_songs = data.iloc[disliked_idxs]
 
     if len(disliked_idxs) > 0:
-        largest_difference = calculate_largest_differnce(
-            liked_songs, disliked_songs)
+        largest_difference = calculate_largest_differnce(liked_songs, disliked_songs)
     else:
         largest_difference = "tempo"
 
     avg_attr = liked_songs[largest_difference].mean()
-    # average_tempo = liked["tempo"].mean()
 
     cluster = model.predict(
         [
@@ -57,12 +55,10 @@ def recommend_songs(liked_idxs, disliked_idxs):
     )
 
     recommended_songs = recommended_cluster.iloc[
-        (recommended_cluster[largest_difference] -
-         avg_attr).abs().argsort().head(10)
+        (recommended_cluster[largest_difference] - avg_attr).abs().argsort().head(10)
     ]
 
-    plot1 = plot(largest_difference, liked_songs,
-                 disliked_songs, recommended_songs)
+    plot1 = plot(largest_difference, liked_songs, disliked_songs, recommended_songs)
     plot2 = plot_trend(
         largest_difference, liked_songs, disliked_songs, recommended_songs
     )
@@ -89,7 +85,6 @@ def calculate_largest_differnce(liked_songs, disliked_songs):
 
     Returns:
     column: String - value of attributed with biggest difference between liked and disliked
-    liked_mean: mean of the attribute with highest difference.
     """
     largest_difference = 0
     column = ""
@@ -121,107 +116,78 @@ def calculate_largest_differnce(liked_songs, disliked_songs):
         return "tempo"
 
 
+def populate_dicts(data, xtick_rnge, highest_difference):
+
+    ranges_key = [
+        f"{xtick_rnge[0]} - {xtick_rnge[1]}",
+        f"{xtick_rnge[1]} - {xtick_rnge[2]}",
+        f"{xtick_rnge[2]} - {xtick_rnge[3]}",
+        f"{xtick_rnge[3]} - {xtick_rnge[4]}",
+        f"{xtick_rnge[4]} - {xtick_rnge[5]}",
+    ]
+
+    res = {rnge: 0 for rnge in ranges_key}
+
+    for __, song in data.iterrows():
+        tmp = song[highest_difference]
+        if tmp < xtick_rnge[1]:
+            res[ranges_key[0]] += 1
+
+        elif tmp > xtick_rnge[1] and tmp < xtick_rnge[2]:
+            res[ranges_key[1]] += 1
+
+        elif tmp > xtick_rnge[2] and tmp < xtick_rnge[3]:
+            res[ranges_key[2]] += 1
+
+        elif tmp > xtick_rnge[3] and tmp < xtick_rnge[4]:
+            res[ranges_key[3]] += 1
+
+        else:
+            res[ranges_key[4]] += 1
+
+    return res
+
+
 def plot(highest_difference, liked_songs, disliked_songs, recommended_songs):
     all_songs = liked_songs.append(disliked_songs)
     lowest = min(all_songs[highest_difference])
     highest = max(all_songs[highest_difference])
-    rnge = np.linspace(lowest, highest, num=6)
 
+    # creating ranges for data
+    rnge = np.linspace(lowest, highest, num=6)
     rnge = [round(i, 2) for i in rnge]
 
-    rnge1 = f"{rnge[0]} - {rnge[1]}"
-    rnge2 = f"{rnge[1]} - {rnge[2]}"
-    rnge3 = f"{rnge[2]} - {rnge[3]}"
-    rnge4 = f"{rnge[3]} - {rnge[4]}"
-    rnge5 = f"{rnge[4]} - {rnge[5]}"
+    # populating dictionaries with the given data
+    liked = populate_dicts(liked_songs, rnge, highest_difference)
+    disliked = populate_dicts(disliked_songs, rnge, highest_difference)
+    recommended = populate_dicts(recommended_songs, rnge, highest_difference)
 
-    plot_liked = {
-        rnge1: 0,
-        rnge2: 0,
-        rnge3: 0,
-        rnge4: 0,
-        rnge5: 0,
-    }
-
-    plot_disliked = {
-        rnge1: 0,
-        rnge2: 0,
-        rnge3: 0,
-        rnge4: 0,
-        rnge5: 0,
-    }
-
-    plot_rec = {
-        rnge1: 0,
-        rnge2: 0,
-        rnge3: 0,
-        rnge4: 0,
-        rnge5: 0,
-    }
-
-    for __, song in liked_songs.iterrows():
-        tmp = song[highest_difference]
-        if tmp < rnge[1]:
-            plot_liked[rnge1] += 1
-        elif tmp > rnge[1] and tmp < rnge[2]:
-            plot_liked[rnge2] += 1
-        elif tmp > rnge[2] and tmp < rnge[3]:
-            plot_liked[rnge3] += 1
-        elif tmp > rnge[3] and tmp < rnge[4]:
-            plot_liked[rnge4] += 1
-        else:
-            plot_liked[rnge5] += 1
-
-    for __, song in disliked_songs.iterrows():
-        tmp = song[highest_difference]
-        if tmp < rnge[1]:
-            plot_disliked[rnge1] += 1
-        elif tmp > rnge[1] and tmp < rnge[2]:
-            plot_disliked[rnge2] += 1
-        elif tmp > rnge[2] and tmp < rnge[3]:
-            plot_disliked[rnge3] += 1
-        elif tmp > rnge[3] and tmp < rnge[4]:
-            plot_disliked[rnge4] += 1
-        else:
-            plot_disliked[rnge5] += 1
-
-    for __, song in recommended_songs.iterrows():
-        tmp = song[highest_difference]
-        if tmp < rnge[1]:
-            plot_rec[rnge1] += 1
-        elif tmp > rnge[1] and tmp < rnge[2]:
-            plot_rec[rnge2] += 1
-        elif tmp > rnge[2] and tmp < rnge[3]:
-            plot_rec[rnge3] += 1
-        elif tmp > rnge[3] and tmp < rnge[4]:
-            plot_rec[rnge4] += 1
-        else:
-            plot_rec[rnge5] += 1
-
-    print("liked", plot_liked)
-    print("disliked", plot_disliked)
-    print("recommended", plot_rec)
-
-    xpos = np.arange(len(plot_liked.keys()))
+    xpos = np.arange(len(liked.keys()))
     plot = plt.figure()
-    plt.xticks(xpos, plot_liked.keys())
-    plt.bar(
-        xpos - 0.2, plot_liked.values(), width=0.2, color="#17a2b8", label="Liked songs"
-    )
+
+    plt.xticks(xpos, liked.keys(), horizontalalignment="left", rotation=-45)
+
+    plt.bar(xpos - 0.2, liked.values(), width=0.2, color="#17a2b8", label="Liked songs")
     plt.bar(
         xpos + 0.2,
-        plot_disliked.values(),
+        disliked.values(),
         width=0.2,
         color="#dc3545",
         label="Disliked songs",
     )
     plt.bar(
-        xpos, plot_rec.values(), width=0.2, color="#20c997", label="Recommended songs",
+        xpos,
+        recommended.values(),
+        width=0.2,
+        color="#20c997",
+        label="Recommended songs",
     )
 
-    plt.xticks(horizontalalignment="left", rotation=-45)
+    # plt.xticks(horizontalalignment="left", rotation=-45)
     plt.legend()
     plt.tight_layout()
+
+    # Picture to bytes
     stringio = BytesIO()
     plot.savefig(stringio, format="png", transparent=True)
     stringio.seek(0)
@@ -292,17 +258,3 @@ def plot_trend(highest_difference, liked_songs, disliked_songs, recommended_song
     plt.close()
 
     return {"trend": highest_difference, "image": str(base64_image)}
-
-
-def plot_tempo():
-    pass
-
-
-def plot_audio_valence():
-    pass
-
-
-liked = [1, 2, 3, 4, 5, 6, 7, 300, 2043, 9234, 2934, 234]
-dis = [8, 9, 10, 11, 12, 13, 14, 544, 3452, 231, 45, 1223]
-
-# recommend_songs(liked, dis)
