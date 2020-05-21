@@ -131,6 +131,11 @@
         margin-top: -10px;
       }
 
+      img.plot-img {
+        width: auto;
+        max-width: 100%;
+      }
+
       .lds-ring {
         display: inline-block;
         position: relative;
@@ -407,8 +412,13 @@
         );
         $(".result-plot").html(
           `<h2 class="regular-title">We noticed a trend in your selection</h2><p class="trend-info">There's a trend in the <strong>${
-            result[1].trend
-          }</strong> of your selection. Have a look at this chart:</p><img class="plot-img d-block" src="data:image/png;base64, ${result[1].image
+            result[2].trend
+          }</strong> of your selection. Have a look at these charts:</p><img class="plot-img d-block" src="data:image/png;base64, ${result[2].image
+            .replace("b'", "")
+            .replace("'", "")}" />
+            <p class="trend-info">Let's have a better look at the numbers. Below is the <strong>${
+              result[2].trend
+            }</strong> in ranges:</p><img class="plot-img d-block" src="data:image/png;base64, ${result[1].image
             .replace("b'", "")
             .replace("'", "")}" />`
         );

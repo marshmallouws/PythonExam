@@ -18,7 +18,8 @@ def recommend_songs(liked_idxs, disliked_idxs):
     disliked_songs = data.iloc[disliked_idxs]
 
     if len(disliked_idxs) > 0:
-        largest_difference = calculate_largest_differnce(liked_songs, disliked_songs)
+        largest_difference = calculate_largest_differnce(
+            liked_songs, disliked_songs)
     else:
         largest_difference = "tempo"
 
@@ -56,13 +57,15 @@ def recommend_songs(liked_idxs, disliked_idxs):
     )
 
     recommended_songs = recommended_cluster.iloc[
-        (recommended_cluster[largest_difference] - avg_attr).abs().argsort().head(10)
+        (recommended_cluster[largest_difference] -
+         avg_attr).abs().argsort().head(10)
     ]
 
-    plot_ = plot(largest_difference, liked_songs, disliked_songs, recommended_songs)
-    # plot_ = plot_trend(
-    #    largest_difference, liked_songs, disliked_songs, recommended_songs
-    # )
+    plot1 = plot(largest_difference, liked_songs,
+                 disliked_songs, recommended_songs)
+    plot2 = plot_trend(
+        largest_difference, liked_songs, disliked_songs, recommended_songs
+    )
 
     liked_idxs = []
     for idx, song in recommended_songs.iterrows():
@@ -75,7 +78,7 @@ def recommend_songs(liked_idxs, disliked_idxs):
         )
         liked_idxs.append(s)
 
-    return [liked_idxs, plot_]
+    return [liked_idxs, plot1, plot2]
 
 
 def calculate_largest_differnce(liked_songs, disliked_songs):
@@ -171,7 +174,7 @@ def plot(highest_difference, liked_songs, disliked_songs, recommended_songs):
 
     for __, song in disliked_songs.iterrows():
         tmp = song[highest_difference]
-        if tmp > rnge[1]:
+        if tmp < rnge[1]:
             plot_disliked[rnge1] += 1
         elif tmp > rnge[1] and tmp < rnge[2]:
             plot_disliked[rnge2] += 1

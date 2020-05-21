@@ -2,6 +2,7 @@ import bs4
 import requests
 import re
 
+
 class Scraper:
 
     def __init__(self):
@@ -22,19 +23,20 @@ class Scraper:
         return links'''
 
     def SetSearch(self, songname, artist):
-        self.formattedSongName = (artist + "-" + songname + "-lyrics").replace(" ", "-").lower()
+        self.formattedSongName = (
+            artist + "-" + songname + "-lyrics").replace(" ", "-").lower()
         return self.formattedSongName
-
 
     def GetTopComment(self):
         response = requests.get("https://genius.com/" + self.formattedSongName)
         soup = bs4.BeautifulSoup(response.content, "html.parser")
 
-        stuff = soup.find_all('p')
+        #stuff = soup.find_all('p')
+        stuff = soup.find_all("div", {"class": "hwxsoX"})
 
         print(stuff)
 
         #r = re.compile('<div>(.+?)</div>')
-        #print(r.findall(response.text))
+        # print(r.findall(response.text))
 
         return soup
