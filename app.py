@@ -4,7 +4,7 @@ import pandas as pd
 import data_handler
 import json
 from song_recommender import recommend_songs
-from scraper import search
+from scraper import search2
 
 app = Flask(__name__)
 CORS(app)
@@ -53,5 +53,5 @@ def autocomplete():
 @app.route('/songinfo', methods=['POST'])
 def song_info():
     song_info = data.iloc[int(request.json)]
-    result = search(song_info)
+    result = search2(song_info)
     return jsonify(result)

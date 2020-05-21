@@ -59,3 +59,20 @@ def search(song_info):
 
 
 #search("blank space", "taylor swift")
+
+def search2(song_info):
+    artist = re.sub(
+        r"\(.*\)", "", song_info['artist_name'].replace("'", "")).strip().replace(" ", "-")
+    song = re.sub(
+        r"\(.*\)", "", song_info['song_name'].replace("'", "")).strip().replace(" ", "-")
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+    response = requests.get(
+        "https://www.songfacts.com/facts/"+artist+"/"+song, headers=headers)
+    print(response.status_code)
+    soup = bs4.BeautifulSoup(response.content, "html.parser")
+    comment = soup.find("ul", {"class": "songfacts-results"})
+    result = "We couldn't find much buzz about this song :(" if comment is None else comment.getText(
+    )
+    return result
