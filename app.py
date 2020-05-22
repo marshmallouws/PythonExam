@@ -58,3 +58,7 @@ def song_info():
     song_info = data.iloc[int(request.json)]
     result = search2(song_info)
     return jsonify(result)
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0")
