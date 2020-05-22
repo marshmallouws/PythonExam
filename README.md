@@ -23,7 +23,7 @@ Challenges:
 
 
 ### How to use
-* Visit frontend on [droplet](#).
+* Visit frontend on [droplet](http://167.71.50.92:5000/).
 * Use the search bar to find songs.
 	* Like and/or dislike songs.
 * Hit the "Get recommendation" button.
