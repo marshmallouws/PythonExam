@@ -60,11 +60,8 @@ def recommend_songs(liked_idxs, disliked_idxs, show=False):
          avg_attr).abs().argsort().head(10)
     ]
 
-    plot1 = plot(largest_difference, liked_songs,
-                 disliked_songs, recommended_songs)
-    plot2 = plot_trend(
-        largest_difference, liked_songs, disliked_songs, recommended_songs
-    )
+    plot1 = plot(largest_difference, liked_songs, disliked_songs, recommended_songs, show)
+    plot2 = plot_trend(largest_difference, liked_songs, disliked_songs, recommended_songs, show)
 
     liked_idxs = []
     for idx, song in recommended_songs.iterrows():
