@@ -20,3 +20,13 @@ Technologies in use:
 Challenges:
 * Machine learning
 * RESTapi - making song suggestions for users
+
+
+### How to use
+* Visit frontend on [droplet](#).
+* Use the search bar to find songs.
+	* Like and/or dislike songs.
+* Hit the "Get recommendation" button.
+* You'll get a list of your recommendations.
+	* Hit the [i] button to learn more about a recommended song.
+* Scroll further down to see the graphs displaying a trend found in your selection.
