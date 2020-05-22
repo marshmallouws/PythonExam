@@ -7,7 +7,7 @@ from io import BytesIO
 import base64
 
 
-def recommend_songs(liked_idxs, disliked_idxs):
+def recommend_songs(liked_idxs, disliked_idxs, show=False):
     k = KMeansHelper()
     model = k.get_model()
 
@@ -77,7 +77,14 @@ def recommend_songs(liked_idxs, disliked_idxs):
         )
         liked_idxs.append(s)
 
-    return [liked_idxs, plot1, plot2]
+    res = [liked_idxs]
+
+    if (show):
+        res.append(plot1)
+        res.append(plot2)
+    
+
+    return res
 
 
 def calculate_largest_differnce(liked_songs, disliked_songs):
