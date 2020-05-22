@@ -57,9 +57,7 @@ def search2(song_info):
         .replace(".", "")
     )
 
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36"
-    }
+    headers = {"User-Agent": "Googlebot/2.1"}
     response = requests.get(
         "https://www.songfacts.com/facts/" + artist + "/" + song, headers=headers
     )

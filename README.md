@@ -14,8 +14,8 @@ Technologies in use:
 * Generators
 * Flask
 * Files
-* Neural network (prediction of songs that may interest the user)
 * Machine learning
+  * clustering - kmeans
 
 Challenges:
 * Machine learning

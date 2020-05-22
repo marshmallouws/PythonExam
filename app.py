@@ -34,23 +34,26 @@ def make_song_list():
     disliked_songs = [int(i) for i in request.json[1]]
     recommended = recommend_songs(liked_songs, disliked_songs)
     return (
-        json.dumps(recommended, default=lambda o: o.__dict__,
-                   sort_keys=True, indent=4),
+        json.dumps(recommended, default=lambda o: o.__dict__, sort_keys=True, indent=4),
         200,
     )
 
 
-@app.route('/suggest', methods=['GET'])
+@app.route("/suggest", methods=["GET"])
 def autocomplete():
-    search = request.args.get('q')
-    results = data[data['song_name'].str.contains(
-        search, case=False) | data['artist_name'].str.contains(search, case=False)]
-    songs = [{"label": song.loc["song_name"]+" - "+song.loc["artist_name"],
-              "value": idx} for idx, song in results.iterrows()]
+    search = request.args.get("q")
+    results = data[
+        data["song_name"].str.contains(search, case=False)
+        | data["artist_name"].str.contains(search, case=False)
+    ]
+    songs = [
+        {"label": song.loc["song_name"] + " - " + song.loc["artist_name"], "value": idx}
+        for idx, song in results.iterrows()
+    ]
     return jsonify(matching_results=songs)
 
 
-@app.route('/songinfo', methods=['POST'])
+@app.route("/songinfo", methods=["POST"])
 def song_info():
     song_info = data.iloc[int(request.json)]
     result = search2(song_info)
