@@ -470,18 +470,18 @@
         $(".plot-wrapper").show();
         $(".learn-more-btn").off();
         $(".learn-more-btn").click(async (e) => {
-          $(e.target).closest("button").prop("disabled", true);
+          $(".learn-more-btn").prop("disabled", true);
           const id = $(e.target).closest("button").data("id");
           $(`.song-info-wrapper[data-id='${id}']`).html(
             '<div class="lds-ripple"><div></div><div></div></div>'
           );
           let result = await postData("/songinfo", id).catch(function () {
-            $(e.target).closest("button").prop("disabled", false);
+            $(".learn-more-btn").prop("disabled", false);
             $(`.song-info-wrapper[data-id='${id}']`).html("");
             return false;
           });
           if (result) {
-            $(e.target).closest("button").prop("disabled", false);
+            $(".learn-more-btn").prop("disabled", false);
             $(`.song-info-wrapper[data-id='${id}']`).html(result);
           }
         });
